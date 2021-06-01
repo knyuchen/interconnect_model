@@ -41,5 +41,23 @@ def single_row (num, up_text, up_num, down_text, down_num, indi, up_pipe, down_p
    if num_of_11 != 0:
       single_11_cell (up_text, up_num+num_of_21, down_text, down_num+num-1, up_pipe, down_pipe)
    io_file.write('\n\n')
+   return (num_of_21 + num_of_11)
 
-single_row (10, 'sys', 2, 'cis', 4, 5, 1, 2) 
+
+def single_pyramid (num, text, indi, up_pipe, down_pipe):
+   num_of_row = math.ceil(math.log2(num))
+   current_down_num = 0
+   next_num = num
+   current_up_num = num
+   current_indi = indi
+   #bottom up
+   for i in range (num_of_row):
+      next_num = single_row (next_num, text, current_up_num, text, current_down_num, current_indi, up_pipe[i], down_pipe[i])     
+      current_down_num = current_up_num
+      current_up_num = current_up_num + next_num
+      current_indi = current_indi + 1
+   return current_down_num
+
+up = [1, 1, 2, 2]
+down = [2, 2, 1, 1]
+single_pyramid (10, 'sys', 5, up, down)
