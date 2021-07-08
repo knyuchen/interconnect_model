@@ -8,7 +8,7 @@ def single_21_cell (up_text, up_num, down_text, down_num, indi, up_pipe, down_pi
    io_file.write('   sl21_cell #(\n')
    io_file.write('      .INDI('+str(indi)+'),\n')   
    io_file.write('      .UP_PIPE('+str(up_pipe)+'),\n')   
-   io_file.write('      .DOWN_PIPE('+str(down_pipe)+'),\n')   
+   io_file.write('      .DOWN_PIPE('+str(down_pipe)+')\n')   
    io_file.write('   )\n')
    io_file.write('   sl21_' + up_text +'_'+ str(up_num)+'_' + down_text+'_' + str(down_num) + '(\n')
    io_file.write('      .req_up(req_'+up_text+'_'+str(up_num)+'),\n')
@@ -89,27 +89,27 @@ def module_header (num, up_name, down_name):
 def module_finish():
     io_file.write('endmodule\n')
 def inter_name (total, num, up_name, down_name, inter_name):
-    io_file.write('assign  ' + up_name + '_res = ' + inter_name + '_res_' + str (total-1) + ';\n')
+    io_file.write('assign  ' + up_name + '_res = res_' + inter_name + '_' + str (total-1) + ';\n')
     io_file.write('assign  ' + inter_name + '_req_' + str(total-1) + ' = ' + up_name + '_req;\n')
     for i in range (num):
-        io_file.write('assign  ' + down_name + '_req_' + str(i) +' = ' + inter_name + '_req_' + str(i) + ';\n')
-        io_file.write('assign  ' + inter_name + '_res_' + str(i) +' = ' + down_name + '_res_' + str(i) + ';\n')
+        io_file.write('assign  ' + down_name + '_req_' + str(i) +' = ' + 'req_' + inter_name + '_' + str(i) + ';\n')
+        io_file.write('assign   res_' + inter_name + '_' + str(i) +' = ' + down_name + '_res_' + str(i) + ';\n')
     io_file.write('\n')
 
 def interconnect_module (num, up_name, down_name, indi, up, down):
     module_header (num, up_name, down_name)
     total = find_num(num)
-    intermediate_logic (num, 'SL_REQ', 'inter_req')
-    intermediate_logic (num, 'SL_RES', 'inter_res')
+    intermediate_logic (total, 'SL_REQ', 'req_inter')
+    intermediate_logic (total, 'SL_RES', 'res_inter')
     inter_name(total, num, up_name, down_name, 'inter')        
     single_pyramid(num, 'inter', indi, up, down)
     module_finish()
 
-up = [1, 1, 2, 2]
+up = [2, 2, 2, 2]
 down = [2, 2, 1, 1]
 #print(find_num (10))
 #intermediate_logic (10, 'pp', 'qq')
 #single_pyramid (10, 'sys', 5, up, down)
 
-interconnect_module (4, 'host', 'slave', 12, up, down)
+interconnect_module (4, 'host', 'slave', 10, up, down)
 

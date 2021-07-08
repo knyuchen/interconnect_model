@@ -20,7 +20,7 @@ module sl21_cell #(
    SL_RES   res_up_pre;
 
    pipe_reg #(
-      .WIDTH($bits(SL_RES),
+      .WIDTH($bits(SL_RES)),
       .STAGE(UP_PIPE)
    ) pipe_up 
    (
@@ -41,7 +41,7 @@ module sl21_cell #(
    SL_REQ   req_down0_pre, req_down1_pre;
 
    pipe_reg #(
-      .WIDTH($bits(SL_REQ),
+      .WIDTH($bits(SL_REQ)),
       .STAGE(DOWN_PIPE)
    ) pipe_down0
    (
@@ -50,7 +50,7 @@ module sl21_cell #(
       .*
    );
    pipe_reg #(
-      .WIDTH($bits(SL_REQ),
+      .WIDTH($bits(SL_REQ)),
       .STAGE(DOWN_PIPE)
    ) pipe_down1
    (
@@ -58,10 +58,10 @@ module sl21_cell #(
       .out(req_down1),
       .*
    );
-   assign req_down0_pre.req = rreq_down0_pre;
-   assign req_down0_pre.weq = wreq_down0_pre;
-   assign req_down1_pre.req = rreq_down1_pre;
-   assign req_down1_pre.weq = wreq_down1_pre;
+   assign req_down0_pre.rreq = rreq_down0_pre;
+   assign req_down0_pre.wreq = wreq_down0_pre;
+   assign req_down1_pre.rreq = rreq_down1_pre;
+   assign req_down1_pre.wreq = wreq_down1_pre;
 
    always_comb begin
       wreq_down0_pre = 0;

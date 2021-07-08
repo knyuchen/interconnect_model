@@ -8,26 +8,26 @@
 
 typedef struct packed {
    logic                   wen;
-   logic [`SL_ADDR_WIDTH]  waddr;
-   logic [`SL_DATA_WIDTH]  wdata;
+   logic [`SL_ADDR_WIDTH - 1 : 0]  waddr;
+   logic [`SL_DATA_WIDTH - 1 : 0]  wdata;
 `ifdef SL_MULTI_MASTER
-   logic [`SL_ID_WIDTH]    wid;
+   logic [`SL_ID_WIDTH - 1 : 0]    wid;
 `endif
 } SL_WREQ; 
 
 typedef struct packed {
    logic                   ren;
-   logic [`SL_ADDR_WIDTH]  raddr;
+   logic [`SL_ADDR_WIDTH - 1 : 0]  raddr;
 `ifdef SL_MULTI_MASTER
-   logic [`SL_ID_WIDTH]    rid;
+   logic [`SL_ID_WIDTH - 1 : 0]    rid;
 `endif
 } SL_RREQ; 
 
 typedef struct packed {
    logic                   rvalid;
-   logic [`SL_DATA_WIDTH]  rdata;
+   logic [`SL_DATA_WIDTH - 1 : 0]  rdata;
 `ifdef SL_MULTI_MASTER
-   logic [`SL_ID_WIDTH]    rid;
+   logic [`SL_ID_WIDTH - 1 : 0]    rid;
 `endif
 } SL_RES;
 

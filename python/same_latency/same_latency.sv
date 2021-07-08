@@ -13,33 +13,39 @@ module sl_interconnect_4 (
    input   rst_n
 );
 
-   SL_REQ   inter_req_0;
-   SL_REQ   inter_req_1;
-   SL_REQ   inter_req_2;
-   SL_REQ   inter_req_3;
+   SL_REQ   req_inter_0;
+   SL_REQ   req_inter_1;
+   SL_REQ   req_inter_2;
+   SL_REQ   req_inter_3;
+   SL_REQ   req_inter_4;
+   SL_REQ   req_inter_5;
+   SL_REQ   req_inter_6;
 
 
-   SL_RES   inter_res_0;
-   SL_RES   inter_res_1;
-   SL_RES   inter_res_2;
-   SL_RES   inter_res_3;
+   SL_RES   res_inter_0;
+   SL_RES   res_inter_1;
+   SL_RES   res_inter_2;
+   SL_RES   res_inter_3;
+   SL_RES   res_inter_4;
+   SL_RES   res_inter_5;
+   SL_RES   res_inter_6;
 
 
-assign  host_res = inter_res_6;
+assign  host_res = res_inter_6;
 assign  inter_req_6 = host_req;
-assign  slave_req_0 = inter_req_0;
-assign  inter_res_0 = slave_res_0;
-assign  slave_req_1 = inter_req_1;
-assign  inter_res_1 = slave_res_1;
-assign  slave_req_2 = inter_req_2;
-assign  inter_res_2 = slave_res_2;
-assign  slave_req_3 = inter_req_3;
-assign  inter_res_3 = slave_res_3;
+assign  slave_req_0 = req_inter_0;
+assign   res_inter_0 = slave_res_0;
+assign  slave_req_1 = req_inter_1;
+assign   res_inter_1 = slave_res_1;
+assign  slave_req_2 = req_inter_2;
+assign   res_inter_2 = slave_res_2;
+assign  slave_req_3 = req_inter_3;
+assign   res_inter_3 = slave_res_3;
 
    sl21_cell #(
-      .INDI(12),
-      .UP_PIPE(1),
-      .DOWN_PIPE(2),
+      .INDI(10),
+      .UP_PIPE(2),
+      .DOWN_PIPE(2)
    )
    sl21_inter_4_inter_0(
       .req_up(req_inter_4),
@@ -52,9 +58,9 @@ assign  inter_res_3 = slave_res_3;
    );
 
    sl21_cell #(
-      .INDI(12),
-      .UP_PIPE(1),
-      .DOWN_PIPE(2),
+      .INDI(10),
+      .UP_PIPE(2),
+      .DOWN_PIPE(2)
    )
    sl21_inter_5_inter_2(
       .req_up(req_inter_5),
@@ -69,9 +75,9 @@ assign  inter_res_3 = slave_res_3;
 
 
    sl21_cell #(
-      .INDI(13),
-      .UP_PIPE(1),
-      .DOWN_PIPE(2),
+      .INDI(11),
+      .UP_PIPE(2),
+      .DOWN_PIPE(2)
    )
    sl21_inter_6_inter_4(
       .req_up(req_inter_6),
