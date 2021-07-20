@@ -16,7 +16,7 @@ module axis_s # (
    output   logic                   last_out
 );
 
-   logic   [WIDTH - 1 : 0]  wdata, rdata;
+   logic   [WIDTH : 0]  wdata, rdata;
    logic                    push, pop, full, empty, valid;
    logic                    al_full, al_empty, ack, flush;
 
@@ -40,7 +40,7 @@ module axis_s # (
       .AL_EMPTY(0),
       .ACK(0),
       .VALID(1),
-      .PEEK(1),
+      .PEEK(0),
       .FLUSH(0)
    )d1(.*);
 

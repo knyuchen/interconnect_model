@@ -1,0 +1,21 @@
+0: 1 --> restart, 2 --> run
+  
+1: (x, y) --> pull from x, len y
+2: (x, y) --> push to x, len y
+3: read status
+
+
+Example:
+
+Initially, Reg 3 = 1 (ready)
+
+write reg 0 -> 1 (restart)
+
+write reg 1 & reg 2
+
+write reg 0 -> 2 (run) --> reg 3 --> 0
+
+while (reg 3 == 0) --> read 3
+
+check AXI slave
+

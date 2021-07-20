@@ -1,6 +1,6 @@
 module axis_m # (
    parameter    WIDTH  = 32,
-   parameter    MAX_LEN = 128
+   parameter    LEN_WIDTH = 10
 )
 (
    output   logic  [WIDTH - 1 : 0]  m_axis_tdata,
@@ -16,7 +16,7 @@ module axis_m # (
    input           [WIDTH - 1 : 0]  data_in,
 
    input                            config_valid,
-   input  [$clog2(MAX_LEN) - 1 : 0] config_len
+   input  [LEN_WIDTH - 1 : 0] config_len
 );
 
    logic   [WIDTH - 1 : 0]  wdata, rdata;
@@ -26,9 +26,9 @@ module axis_m # (
    assign flush = 0;         
   
    logic state, state_w;
-   localparam  IDLE, RUN;
-   logic [$clog2(MAX_LEN) - 1 : 0] count, count_w;
-   logic [$clog2(MAX_LEN) - 1 : 0] len_store_w, len_store;
+   localparam  IDLE = 0, RUN = 1;
+   logic [LEN_WIDTH - 1 : 0] count, count_w;
+   logic [LEN_WIDTH - 1 : 0] len_store_w, len_store;
    
    assign ready = ~full;
    assign m_axis_tdata = rdata;
@@ -55,7 +55,7 @@ module axis_m # (
    always_comb begin
       len_store_w = len_store;
       count_w = count;
-      state = state_w;
+      state_w = state;
       if (state == IDLE) begin
          if (config_valid == 1) begin
             len_store_w = config_len;

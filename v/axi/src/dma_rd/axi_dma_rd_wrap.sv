@@ -4,45 +4,11 @@
 
 module axi_dma_rd_wrap #
 (
-    // Width of AXI data bus in bits
     parameter AXI_DATA_WIDTH = 32,
-    // Width of AXI address bus in bits
     parameter AXI_ADDR_WIDTH = 32,
-    // Width of AXI wstrb (width of data bus in words)
-    parameter AXI_STRB_WIDTH = (AXI_DATA_WIDTH/8),
-    // Width of AXI ID signal
     parameter AXI_ID_WIDTH = 8,
-    // Maximum AXI burst length to generate
-    parameter AXI_MAX_BURST_LEN = 16,
-    // Width of AXI stream interfaces in bits
-    parameter AXIS_DATA_WIDTH = AXI_DATA_WIDTH,
-    // Use AXI stream tkeep signal
-    parameter AXIS_KEEP_ENABLE = (AXIS_DATA_WIDTH>8),
-    // AXI stream tkeep signal width (words per cycle)
-    parameter AXIS_KEEP_WIDTH = (AXIS_DATA_WIDTH/8),
-    // Use AXI stream tlast signal
-    parameter AXIS_LAST_ENABLE = 1,
-    // Propagate AXI stream tid signal
-    parameter AXIS_ID_ENABLE = 0,
-    // AXI stream tid signal width
-    parameter AXIS_ID_WIDTH = 8,
-    // Propagate AXI stream tdest signal
-    parameter AXIS_DEST_ENABLE = 0,
-    // AXI stream tdest signal width
-    parameter AXIS_DEST_WIDTH = 8,
-    // Propagate AXI stream tuser signal
-    parameter AXIS_USER_ENABLE = 1,
-    // AXI stream tuser signal width
-    parameter AXIS_USER_WIDTH = 1,
-    // Width of length field
-    parameter LEN_WIDTH = 9,
-    // Width of tag field
-    parameter TAG_WIDTH = 8,
-    // Enable support for scatter/gather DMA
-    // (multiple descriptors per AXI stream frame)
-    parameter ENABLE_SG = 0,
-    // Enable support for unaligned transfers
-    parameter ENABLE_UNALIGNED = 0
+    parameter LEN_WIDTH    = 9,
+    parameter AXIS_DATA_WIDTH = AXI_DATA_WIDTH
 )
 (
 
@@ -51,30 +17,15 @@ module axi_dma_rd_wrap #
      */
     input          [AXI_ADDR_WIDTH-1:0]  s_axis_read_desc_addr,
     input          [LEN_WIDTH-1:0]       s_axis_read_desc_len,
-//    input          [TAG_WIDTH-1:0]       s_axis_read_desc_tag,
-//    input          [AXIS_ID_WIDTH-1:0]   s_axis_read_desc_id,
-//    input          [AXIS_DEST_WIDTH-1:0] s_axis_read_desc_dest,
-//    input          [AXIS_USER_WIDTH-1:0] s_axis_read_desc_user,
     input                                s_axis_read_desc_valid,
     output   logic                       s_axis_read_desc_ready,
 
-    /*
-     * AXI read descriptor status output
-     */
-//    output   logic [TAG_WIDTH-1:0]       m_axis_read_desc_status_tag,
     output   logic                       m_axis_read_desc_status_valid,
 
-    /*
-     * AXI stream read data output
-     */
     output   logic [AXIS_DATA_WIDTH-1:0] m_axis_read_data_tdata,
-//    output   logic [AXIS_KEEP_WIDTH-1:0] m_axis_read_data_tkeep,
     output   logic                       m_axis_read_data_tvalid,
     input                                m_axis_read_data_tready,
     output   logic                       m_axis_read_data_tlast,
-//    output   logic [AXIS_ID_WIDTH-1:0]   m_axis_read_data_tid,
-//    output   logic [AXIS_DEST_WIDTH-1:0] m_axis_read_data_tdest,
-//    output   logic [AXIS_USER_WIDTH-1:0] m_axis_read_data_tuser,
 
     /*
      * AXI master interface
@@ -99,16 +50,24 @@ module axi_dma_rd_wrap #
     /*
      * Configuration
      */
-//    input                                enable
     input                                clk,
     input                                rst_n
 );
-/*
-   logic  [AXIS_ID_WIDTH - 1 : 0]  m_axi_arid, m_axi_rid;
-   logic   m_axi_arlock;
-   logic  [3:0]  m_axi_arcache;
-   logic  [2:0]  m_axi_arprot;
-*/
+    localparam AXI_STRB_WIDTH = (AXI_DATA_WIDTH/8);
+    localparam AXI_MAX_BURST_LEN = 16;
+    localparam AXIS_KEEP_ENABLE = (AXIS_DATA_WIDTH>8);
+    localparam AXIS_KEEP_WIDTH = (AXIS_DATA_WIDTH/8);
+    localparam AXIS_LAST_ENABLE = 1;
+    localparam AXIS_ID_ENABLE = 0;
+    localparam AXIS_ID_WIDTH = 8;
+    localparam AXIS_DEST_ENABLE = 0;
+    localparam AXIS_DEST_WIDTH = 8;
+    localparam AXIS_USER_ENABLE = 1;
+    localparam AXIS_USER_WIDTH = 1;
+    localparam TAG_WIDTH = 8;
+    localparam ENABLE_SG = 0;
+    localparam ENABLE_UNALIGNED = 0;
+   
    logic [AXIS_ID_WIDTH - 1 : 0]   m_axis_read_data_tid;
    logic [AXIS_DEST_WIDTH - 1 : 0] m_axis_read_data_tdest;
    logic [AXIS_USER_WIDTH - 1 : 0] m_axis_read_data_tuser;

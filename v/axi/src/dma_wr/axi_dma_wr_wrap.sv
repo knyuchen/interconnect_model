@@ -3,45 +3,12 @@
 */
 module axi_dma_wr_wrap #
 (
-    // Width of AXI data bus in bits
     parameter AXI_DATA_WIDTH = 32,
-    // Width of AXI address bus in bits
     parameter AXI_ADDR_WIDTH = 32,
-    // Width of AXI wstrb (width of data bus in words)
-    parameter AXI_STRB_WIDTH = (AXI_DATA_WIDTH/8),
-    // Width of AXI ID signal
     parameter AXI_ID_WIDTH = 8,
-    // Maximum AXI burst length to generate
-    parameter AXI_MAX_BURST_LEN = 16,
-    // Width of AXI stream interfaces in bits
-    parameter AXIS_DATA_WIDTH = AXI_DATA_WIDTH,
-    // Use AXI stream tkeep signal
-    parameter AXIS_KEEP_ENABLE = (AXIS_DATA_WIDTH>8),
-    // AXI stream tkeep signal width (words per cycle)
-    parameter AXIS_KEEP_WIDTH = (AXIS_DATA_WIDTH/8),
-    // Use AXI stream tlast signal
-    parameter AXIS_LAST_ENABLE = 1,
-    // Propagate AXI stream tid signal
-    parameter AXIS_ID_ENABLE = 0,
-    // AXI stream tid signal width
-    parameter AXIS_ID_WIDTH = 8,
-    // Propagate AXI stream tdest signal
-    parameter AXIS_DEST_ENABLE = 0,
-    // AXI stream tdest signal width
-    parameter AXIS_DEST_WIDTH = 8,
-    // Propagate AXI stream tuser signal
-    parameter AXIS_USER_ENABLE = 1,
-    // AXI stream tuser signal width
-    parameter AXIS_USER_WIDTH = 1,
-    // Width of length field
     parameter LEN_WIDTH = 9,
-    // Width of tag field
-    parameter TAG_WIDTH = 8,
-    // Enable support for scatter/gather DMA
-    // (multiple descriptors per AXI stream frame)
-    parameter ENABLE_SG = 0,
-    // Enable support for unaligned transfers
-    parameter ENABLE_UNALIGNED = 0
+    parameter AXIS_DATA_WIDTH = AXI_DATA_WIDTH,
+    parameter AXI_STRB_WIDTH = (AXI_DATA_WIDTH/8)
 )
 (
 
@@ -50,31 +17,17 @@ module axi_dma_wr_wrap #
      */
     input          [AXI_ADDR_WIDTH-1:0]  s_axis_write_desc_addr,
     input          [LEN_WIDTH-1:0]       s_axis_write_desc_len,
-//    input          [TAG_WIDTH-1:0]       s_axis_write_desc_tag,
     input                                s_axis_write_desc_valid,
     output   logic                       s_axis_write_desc_ready,
-
-    /*
-     * AXI write descriptor status output
-     */
-//    output   logic [LEN_WIDTH-1:0]       m_axis_write_desc_status_len,
-//    output   logic [TAG_WIDTH-1:0]       m_axis_write_desc_status_tag,
-//    output   logic [AXIS_ID_WIDTH-1:0]   m_axis_write_desc_status_id,
-//    output   logic [AXIS_DEST_WIDTH-1:0] m_axis_write_desc_status_dest,
-//    output   logic [AXIS_USER_WIDTH-1:0] m_axis_write_desc_status_user,
     output   logic                       m_axis_write_desc_status_valid,
 
     /*
      * AXI stream write data input
      */
     input          [AXIS_DATA_WIDTH-1:0] s_axis_write_data_tdata,
-//    input          [AXIS_KEEP_WIDTH-1:0] s_axis_write_data_tkeep,
     input                                s_axis_write_data_tvalid,
     output   logic                       s_axis_write_data_tready,
     input                                s_axis_write_data_tlast,
-//    input          [AXIS_ID_WIDTH-1:0]   s_axis_write_data_tid,
-//    input          [AXIS_DEST_WIDTH-1:0] s_axis_write_data_tdest,
-//    input          [AXIS_USER_WIDTH-1:0] s_axis_write_data_tuser,
 
     /*
      * AXI master interface
@@ -101,23 +54,24 @@ module axi_dma_wr_wrap #
 
     input                                clk,
     input                                rst_n
-    /*
-     * Configuration
-     */
-//    input                                enable,
-//    input                                abort
 );
 
+    localparam AXIS_KEEP_ENABLE = (AXIS_DATA_WIDTH>8);
+    localparam AXI_MAX_BURST_LEN = 16;
+    localparam AXIS_KEEP_WIDTH = (AXIS_DATA_WIDTH/8);
+    localparam AXIS_LAST_ENABLE = 1;
+    localparam AXIS_ID_ENABLE = 0;
+    localparam AXIS_ID_WIDTH = 8;
+    localparam AXIS_DEST_ENABLE = 0;
+    localparam AXIS_DEST_WIDTH = 8;
+    localparam AXIS_USER_ENABLE = 1;
+    localparam AXIS_USER_WIDTH = 1;
+    localparam TAG_WIDTH = 8;
+    localparam ENABLE_SG = 0;
+    localparam ENABLE_UNALIGNED = 0;
    logic enable, abort;
    assign enable = 1;
    assign abort = 0; 
-/*
-   logic  [AXIS_ID_WIDTH-1 : 0]  m_axi_awid, m_axi_bid;
-//   assign m_axi_awid = 0;
-   logic  m_axi_awlock;
-   logic  [3:0]  m_axi_awcache;
-   logic  [2:0]  m_axi_awprot;
-*/
    logic  rst;
  
    assign rst = ~rst_n;
@@ -137,7 +91,6 @@ module axi_dma_wr_wrap #
    logic [AXIS_ID_WIDTH-1:0]   m_axis_write_desc_status_id;
    logic [AXIS_DEST_WIDTH-1:0] m_axis_write_desc_status_dest;
    logic [AXIS_USER_WIDTH-1:0] m_axis_write_desc_status_user;
-//   logic                       m_axis_write_desc_status_valid;
 
    assign s_axis_write_desc_tag = 0;
    axi_dma_wr #(
