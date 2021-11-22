@@ -8,13 +8,14 @@ module axi_ram_wrap #
     parameter DATA_WIDTH = 32,
     // Width of address bus in bits
     parameter ADDR_WIDTH = 32,
-    parameter EFF_ADDR_WIDTH = 6,
+    parameter EFF_ADDR_WIDTH = 8,
     // Width of wstrb (width of data bus in words)
     parameter STRB_WIDTH = (DATA_WIDTH/8),
     // Width of ID signal
     parameter ID_WIDTH = 8,
     // Extra pipeline register on output   logic
-    parameter PIPELINE_OUTPUT = 0
+    parameter PIPELINE_OUTPUT = 0,
+    parameter FILE_NUM = 0
 )
 (
    input            [ID_WIDTH-1:0]    s_axi_awid,
@@ -82,7 +83,8 @@ module axi_ram_wrap #
       .EFF_ADDR_WIDTH(EFF_ADDR_WIDTH),
       .STRB_WIDTH(STRB_WIDTH),
       .ID_WIDTH(ID_WIDTH),
-      .PIPELINE_OUTPUT(PIPELINE_OUTPUT)
+      .PIPELINE_OUTPUT(PIPELINE_OUTPUT),
+      .FILE_NUM(FILE_NUM)
    ) axi_ram0 (.*); 
 
 endmodule

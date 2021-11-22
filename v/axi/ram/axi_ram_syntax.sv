@@ -16,7 +16,8 @@ module axi_ram #
     // Width of ID signal
     parameter ID_WIDTH = 8,
     // Extra pipeline register on output
-    parameter PIPELINE_OUTPUT = 0
+    parameter PIPELINE_OUTPUT = 0,
+    parameter FILE_NUM = 0
 )
 (
     input                          clk,
@@ -111,6 +112,18 @@ logic s_axi_rvalid_pipe_flop, s_axi_rvalid_pipe_flop_next ;
 //logic [(2**EFF_ADDR_WIDTH)-1:0][DATA_WIDTH-1:0] mem, mem_w;
 logic [DATA_WIDTH-1:0]mem[0:2**EFF_ADDR_WIDTH-1];
 logic [DATA_WIDTH-1:0]mem_w[0:2**EFF_ADDR_WIDTH-1];
+logic [DATA_WIDTH/2-1:0]monitor_data_r[0:2**EFF_ADDR_WIDTH-1];
+logic [DATA_WIDTH/2-1:0]monitor_data_i[0:2**EFF_ADDR_WIDTH-1];
+
+genvar j;
+
+generate 
+   for (j = 0; j < 2**EFF_ADDR_WIDTH; j = j + 1) begin
+      assign monitor_data_r[j] = mem[j][DATA_WIDTH - 1 : DATA_WIDTH / 2];
+      assign monitor_data_i[j] = mem[j][DATA_WIDTH/2 - 1 : 0];
+   end
+endgenerate
+
 //logic [(2**EFF_ADDR_WIDTH)-1:0]mem_w[DATA_WIDTH-1:0];
 
 logic [VALID_ADDR_WIDTH-1:0] s_axi_awaddr_valid;
@@ -239,11 +252,24 @@ end
 /*
    patch end
 */    
-
 always_ff @(posedge clk or posedge rst) begin
    if (rst == 1) begin
 //   $readmemb("/afs/eecs.umich.edu/vlsida/users/knyuchen/interconnect_model/python/random_number_gen/random.bin", mem);
-   $readmemb("/afs/eecs.umich.edu/vlsida/users/knyuchen/interconnect_model/python/ordered_number_gen/ordered.bin", mem);
+if (FILE_NUM == 0) begin
+   $readmemb("../../ordered_number_gen/ordered.bin", mem);
+end
+else if (FILE_NUM == 1) begin
+   $readmemb("../../ordered_number_gen/ordered_32.bin", mem);
+end
+else if (FILE_NUM == 2) begin
+   $readmemb("../tb/DAP_lite/back_sub/init.txt", mem);
+end
+else if (FILE_NUM == 3) begin
+   $readmemb("../tb/DAP_stream/stream_test/init.txt", mem);
+end
+else if (FILE_NUM == 4) begin
+   $readmemb("../../ordered_number_gen/ordered_auto.bin", mem);
+end
    end
    else begin
     mem <= mem_w;

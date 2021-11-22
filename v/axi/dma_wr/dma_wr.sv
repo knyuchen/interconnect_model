@@ -1,12 +1,20 @@
+/*
+  dma + axis_m + command dispatcher
+  Revisions:
+    10/12/21
+      First Documentation, changed stream command signal
+*/
 module dma_wr #
 (
     parameter AXI_DATA_WIDTH = 32,
     parameter AXI_ADDR_WIDTH = 32,
     parameter AXI_ID_WIDTH = 8,
+// LEN per data 
     parameter CONFIG_LEN_WIDTH = 9,
     parameter OUTSTANDING_COUNT = 2,
     parameter AXIS_DATA_WIDTH = AXI_DATA_WIDTH,
     parameter AXI_STRB_WIDTH = (AXI_DATA_WIDTH/8),
+// LEN per byte
     parameter LEN_WIDTH = CONFIG_LEN_WIDTH + $clog2(AXI_DATA_WIDTH/8)
 )
 (
@@ -66,13 +74,17 @@ module dma_wr #
     localparam TAG_WIDTH = 8;
     localparam ENABLE_SG = 0;
     localparam ENABLE_UNALIGNED = 0;
-    
+/*
+   Interface wth dma_wr_wrap
+*/ 
     logic          [AXI_ADDR_WIDTH-1:0]  s_axis_write_desc_addr;
     logic          [LEN_WIDTH-1:0]       s_axis_write_desc_len;
     logic                                s_axis_write_desc_valid;
     logic                       s_axis_write_desc_ready;
     logic                       m_axis_write_desc_status_valid;
-
+/*
+   Interface with axis_m
+*/
     logic          [AXIS_DATA_WIDTH-1:0] s_axis_write_data_tdata;
     logic                                s_axis_write_data_tvalid;
     logic                       s_axis_write_data_tready;
@@ -108,7 +120,15 @@ module dma_wr #
    logic                    al_full, al_empty, ack, flush;
   
    assign flush = 0;
- 
+
+   logic  [AXI_DATA_WIDTH / 2 - 1 : 0]  monitor_axi_tdata_r;
+   logic  [AXI_DATA_WIDTH / 2 - 1 : 0]  monitor_axi_tdata_i;
+
+   assign monitor_axi_tdata_r = s_axis_write_data_tdata [AXI_DATA_WIDTH - 1 : AXI_DATA_WIDTH / 2];
+   assign monitor_axi_tdata_i = s_axis_write_data_tdata [AXI_DATA_WIDTH/2 - 1 : 0];
+/*
+   PEEK = 1 because command dispatch is valid regardless handshaking
+*/ 
    d0fifo #(
       .WIDTH(AXI_ADDR_WIDTH + CONFIG_LEN_WIDTH),
       .SIZE(OUTSTANDING_COUNT),
@@ -129,16 +149,22 @@ module dma_wr #
    assign len_zero = '0;
 
    assign s_axis_write_desc_addr = rdata[AXI_ADDR_WIDTH + CONFIG_LEN_WIDTH - 1 : CONFIG_LEN_WIDTH];
+// bit width extension for len
    assign s_axis_write_desc_len  = {rdata[CONFIG_LEN_WIDTH - 1 : 0], len_zero};
    assign s_axis_write_desc_valid = valid == 1 && state == WAIT_DMA;
    assign push = config_valid;
    assign pop  = s_axis_write_desc_ready == 1 && s_axis_write_desc_valid == 1 && state == WAIT_DMA;
    assign wdata = {config_addr, config_len};
-   assign config_ready = ~full;
+   assign config_ready = ~full || pop == 1;
    assign config_empty = empty && state == WAIT_DMA;
-
-   assign stream_config_valid = s_axis_write_desc_valid;
-   assign stream_config_len = s_axis_write_desc_len >>> $clog2(AXI_DATA_WIDTH/8) ;
+/*
+   stream config valid should be handshaking
+   stream config len should be just rdata
+*/
+//   assign stream_config_valid = s_axis_write_desc_valid;
+//   assign stream_config_len = s_axis_write_desc_len >>> $clog2(AXI_DATA_WIDTH/8) ;
+   assign stream_config_valid = s_axis_write_desc_valid && s_axis_write_desc_ready;
+   assign stream_config_len = rdata[CONFIG_LEN_WIDTH - 1 : 0];
 
 
    always_comb begin

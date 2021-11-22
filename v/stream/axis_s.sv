@@ -1,7 +1,14 @@
+/*
+   Revisions:
+      10/08/21: First Documentation
+*/
 module axis_s # (
    parameter    WIDTH  = 32
 )
 (
+/*
+   Input from previous stage, axis slave interface
+*/
    input           [WIDTH-1:0]      s_axis_tdata,
    input                            s_axis_tvalid,
    output   logic                   s_axis_tready,
@@ -9,7 +16,10 @@ module axis_s # (
 
    input                            clk,
    input                            rst_n,
-
+/*
+   Output to next stage, gives last_out information as well, same cycle of ready / valid
+   No Peeking, valid is triggered by ready
+*/
    input                            ready,
    output   logic                   valid_out,
    output   logic  [WIDTH - 1 : 0]  data_out,
@@ -27,7 +37,7 @@ module axis_s # (
    assign data_out      = rdata[WIDTH - 1 : 0];
    assign last_out      = rdata[WIDTH];
    assign pop           = ready;
-   assign s_axis_tready = ~full;
+   assign s_axis_tready = ~full || pop == 1;
    assign push          = s_axis_tvalid; 
 
 

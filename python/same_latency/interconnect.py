@@ -106,10 +106,10 @@ def interconnect_module (num, up_name, down_name, indi, up, down):
     module_finish()
 
 up = [2, 2, 2, 2]
-down = [2, 2, 1, 1]
+down = [2, 2, 2, 2]
 #print(find_num (10))
 #intermediate_logic (10, 'pp', 'qq')
 #single_pyramid (10, 'sys', 5, up, down)
 
-interconnect_module (4, 'host', 'slave', 10, up, down)
+interconnect_module (16, 'host', 'slave', 12, up, down)
 
