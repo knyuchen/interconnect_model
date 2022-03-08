@@ -3,7 +3,8 @@
       10/08/21: First Documentation
 */
 module axis_s # (
-   parameter    WIDTH  = 32
+   parameter    WIDTH  = 32,
+   parameter    DEPTH  = 4
 )
 (
 /*
@@ -43,7 +44,7 @@ module axis_s # (
 
    d0fifo #(
       .WIDTH(WIDTH+1),
-      .SIZE(4),
+      .SIZE(DEPTH),
       .FULL(1),
       .EMPTY(1),
       .AL_FULL(0),
